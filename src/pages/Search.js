@@ -1,13 +1,18 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import Carregando from './Carregando';
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       bandName: '',
       isSaveBtnDisable: true,
+      loading: false,
+      albums: [],
+      teste: '',
     };
   }
 
@@ -25,14 +30,20 @@ class Search extends React.Component {
     }, () => this.validationBtn());
   };
 
-  render() {
-    const { bandName, isSaveBtnDisable } = this.state;
+  fetchAlbumAPI = async () => {
+    const { bandName } = this.state;
+    this.setState({ loading: true });
+    const albums = await searchAlbumsAPI(bandName);
+    // console.log(albums);
+    this.setState({ albums: albums, bandName: '', loading: false, teste: bandName });
+  };
 
+  render() {
+    const { bandName, isSaveBtnDisable, loading, albums, teste } = this.state;
     return (
-      <main>
-        <div data-testid="page-search">
-          <Header />
-        </div>
+      <div data-testid="page-search">
+        <Header />
+
         <form>
           <label htmlFor="bandName">
             <input
@@ -47,13 +58,36 @@ class Search extends React.Component {
             type="button"
             data-testid="search-artist-button"
             name="btnBand"
-            onClick={ () => console.log('clicou') }
+            onClick={ this.fetchAlbumAPI }
             disabled={ isSaveBtnDisable }
           >
             Pesquisar
           </button>
         </form>
-      </main>
+
+        { loading ? <Carregando /> : (
+          <>
+            <h3>{`Resultado de álbuns de: ${teste}`}</h3>
+            <div className="albuns">
+              { albums.length === 0 ? <p>Nenhum álbum foi encontrado</p> : (
+                albums.map((album) => (
+                  <div key={ album.collectionId }>
+                    <img src={ album.artworkUrl100 } alt={ album.collectionName } />
+                    <p>{ album.collectionName }</p>
+                    <p>{ album.artistName }</p>
+                    <Link
+                      to={ `/album/${album.collectionId}` }
+                      data-testid={ `link-to-album-${album.collectionId}` }
+                    >
+                      Ver detalhes
+                    </Link>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </div>
     );
   }
 }

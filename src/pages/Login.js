@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { createUser } from '../services/userAPI';
 import Carregando from './Carregando';
 
@@ -31,11 +32,12 @@ class Login extends React.Component {
 
   onButtonClick = async () => { // carregando e redirecionando
     const { loginNameInput } = this.state;
+    const { history } = this.props;
     const objLoginNameInput = { name: loginNameInput };
     this.setState({ loading: true });
 
-    await createUser(objLoginNameInput); // createUser recebe um obj
-    this.setState({ redirect: true });
+    await createUser(objLoginNameInput); //
+    this.setState({ loading: false }, () => history.push('/search'));
   };
 
   render() {
@@ -73,5 +75,9 @@ class Login extends React.Component {
     );
   }
 }
-
+Login.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 export default Login;

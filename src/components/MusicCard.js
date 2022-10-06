@@ -22,7 +22,7 @@ class MusicCard extends Component {
     this.setState({
       loading: true,
     });
-    const { music } = this.props;
+    const music = this.props;
     if (checked) {
       await removeSong(music);
       this.setState({
@@ -40,8 +40,8 @@ class MusicCard extends Component {
 
   recoverFavoritas = async () => {
     const musicas = await getFavoriteSongs();
-    const { music } = this.props;
-    if (musicas.some((musica) => musica.trackId === music.trackId)) {
+    const { trackId } = this.props;
+    if (musicas.some((musica) => musica.trackId === trackId)) {
       this.setState({
         checked: true,
       });
@@ -86,6 +86,5 @@ MusicCard.propTypes = {
   previewUrl: PropTypes.string.isRequired,
   trackName: PropTypes.string.isRequired,
   trackId: PropTypes.number.isRequired,
-  music: PropTypes.instanceOf(Object).isRequired,
 };
 export default MusicCard;

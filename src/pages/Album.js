@@ -46,8 +46,8 @@ class Album extends React.Component {
                 { musicList.map((music, index) => {
                   if (index > 0) {
                     return (<MusicCard
-                      key={ index }
-                      { ...music }
+                      key={ music.trackId }
+                      { ...music } // tem todo o conteúdo do obj: trackId, img
                     />);
                   }
                   return null;
